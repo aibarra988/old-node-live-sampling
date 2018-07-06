@@ -19,23 +19,35 @@ ao.on('error', err => console.error);
 // Note that this does not strip the WAV header so a click will be heard at the beginning
 const rs = fs.createReadStream('burning-wires.wav');
 
-const modules = Map();
-modules.set(new Module());
-modules.set(new Module());
+const module = new Module({
+    key: 'r',
+    soundSource: ao
+});
 
 process.stdin.on('keypress', (ch, key) => {
     if (key.ctrl && key.name === 'c') {
         process.exit();
     
-    // if 
-    } else if (key.name === 'a') {
-        console.log(ch, key);
-        // module.
+    } else if (key.name === 'r') {
+        
+        // If the key hasn't been pressed before,
+        // we are going to record the sample onto the module
+        if (!module.hasSample) {
+            module.record();
+        } 
+        
+        //if the key has been pressed before and 
+        // the module has a sample recorded, play that sample
+        else {
+            module.play();
+        }
     }
 });
 
 process.stdin.off('keypress', (ch, key => {
-
+    if (key.name === 'r') {
+        module.stop();
+    }
 }));
 
 // setup to close the output stream at the end of the read stage
